@@ -117,7 +117,7 @@ class App extends Component<{}, { textBlockIds: Array<string>, scenes: Array<{ s
             </ground>
             <adtFullscreenUi name="fullScreenUI">
               {
-                state.scenes.concat(state.textBlockIds.map(id => ({ id, position: +id, title: id, show: false}))).map(s => (
+                state.scenes.concat(state.textBlockIds.map(id => ({ id, position: +id, title: "some_bad_title", show: false}))).map(s => (
                   <textBlock key={s.id} top={s.position * 20} text={s.title} isVisible={s.show} />
                 ))
               }
