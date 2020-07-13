@@ -27,7 +27,6 @@ class App extends Component<{}, { scenes: Array<{ id: string, title: string, pos
     };
 
     this.state = {
-
       scenes: [
         {
           title: `title ${this.lastId}`,
@@ -50,7 +49,6 @@ class App extends Component<{}, { scenes: Array<{ id: string, title: string, pos
   }
 
   handleAdd() {
-    console.log("Hello world");
     this.setState(state => ({
       ...state,
       scenes: [
@@ -62,8 +60,6 @@ class App extends Component<{}, { scenes: Array<{ id: string, title: string, pos
         }
       ]
     }));
-    console.log(this.state);
-
   }
 
   public render() {
@@ -95,35 +91,21 @@ class App extends Component<{}, { scenes: Array<{ id: string, title: string, pos
             {
               state.scenes.map(s => (
                 <sphere
-                  // ref={sphereRef}
                   key={s.id}
                   name={s.title} diameter={1} segments={16} position={new Vector3(s.position, 0, 0)}>
-                  <standardMaterial name='material1' specularPower={16}
-                    diffuseColor={Color3.Black()}
-                    emissiveColor={new Color3(0.5, 0.5, 0.5)}
-                    reflectionFresnelParameters={FresnelParameters.Parse({
-                      isEnabled: true,
-                      leftColor: [1, 1, 1],
-                      rightColor: [0, 0, 0],
-                      bias: 0.1,
-                      power: 1
-                    })}
-                  />
                 </sphere>
               ))
             }
-
             <ground name="ground1" width={10} height={10} subdivisions={2} receiveShadows={true}>
               <physicsImpostor type={PhysicsImpostor.BoxImpostor} _options={{ mass: 0, restitution: 0.9 }} />
             </ground>
             <adtFullscreenUi name="fullScreenUI">
               {
                 state.scenes.map(s => (
-                  <textBlock top={s.position*20} text={s.title}/>
+                  <textBlock top={s.position * 20} text={s.title} />
                 ))
               }
             </adtFullscreenUi>
-            <vrExperienceHelper webVROptions={{ createDeviceOrientationCamera: false }} enableInteractions={true} />
           </Scene>
         </Engine>
       </div>
