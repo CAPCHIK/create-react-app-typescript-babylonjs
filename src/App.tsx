@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, Component } from 'react';
 import "@babylonjs/core/Physics/physicsEngineComponent"  // side-effect adds scene.enablePhysics function
 import { Vector3, PhysicsImpostor, Mesh, Nullable, Color3, FresnelParameters, Texture } from '@babylonjs/core';
 import { CannonJSPlugin } from '@babylonjs/core/Physics/Plugins'
@@ -16,68 +16,119 @@ const onButtonClicked = () => {
   }
 }
 
-const App: React.FC = () => {
-  const sphereRef = useCallback(node => {
-    sphere = node.hostInstance;
-  }, []);
+class App extends Component<{}, { scenes: Array<{ id: string, title: string, position: number }> }> {
+  private sphereRef: any;
+  private lastId = -5;
+  constructor(props: any) {
+    super(props)
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>@babylonjs + `react-babylonjs`</p>
+    this.sphereRef = (node: any) => {
+      sphere = node.hostInstance;
+    };
+
+    this.state = {
+
+      scenes: [
+        {
+          title: `title ${this.lastId}`,
+          position: this.lastId,
+          id: (this.lastId++).toString()
+        },
+        {
+          title: `title ${this.lastId}`,
+          position: this.lastId,
+          id: (this.lastId++).toString()
+        },
+        {
+          title: `title ${this.lastId}`,
+          position: this.lastId,
+          id: (this.lastId++).toString()
+        }
+      ],
+    }
+    this.handleAdd = this.handleAdd.bind(this);
+  }
+
+  handleAdd() {
+    console.log("Hello world");
+    this.setState(state => ({
+      ...state,
+      scenes: [
+        ...state.scenes,
+        {
+          title: `title ${this.lastId}`,
+          position: this.lastId,
+          id: (this.lastId++).toString()
+        }
+      ]
+    }));
+    console.log(this.state);
+
+  }
+
+  public render() {
+    const { sphereRef, state } = this;
+    return (
+      <div className="App" >
+        <div>
+          <button onClick={this.handleAdd}>Add</button>
+        </div>
+        {
+          state.scenes.map(s =>
+            <div key={s.id}>
+              <button >{s.title}</button>
+            </div>
+          )
+        }
         <Engine antialias={true} adaptToDeviceRatio={true} canvasId="sample-canvas">
           <Scene enablePhysics={[gravityVector, new CannonJSPlugin()]}>
-            <arcRotateCamera name="arc" target={ new Vector3(0, 1, 0) }
-                  alpha={-Math.PI / 2} beta={(0.5 + (Math.PI / 4))}
-                  radius={4} minZ={0.001} wheelPrecision={50} 
-                  lowerRadiusLimit={8} upperRadiusLimit={20} upperBetaLimit={Math.PI / 2} />
+            <arcRotateCamera name="arc" target={new Vector3(0, 1, 0)}
+              alpha={-Math.PI / 2} beta={(0.5 + (Math.PI / 4))}
+              radius={4} minZ={0.001} wheelPrecision={50}
+              lowerRadiusLimit={8} upperRadiusLimit={20} upperBetaLimit={Math.PI / 2} />
             <hemisphericLight name='hemi' direction={new Vector3(0, -1, 0)} intensity={0.8} />
-            <directionalLight name="shadow-light" setDirectionToTarget={[Vector3.Zero()]} direction={Vector3.Zero()} position = {new Vector3(-40, 30, -40)}
+            <directionalLight name="shadow-light" setDirectionToTarget={[Vector3.Zero()]} direction={Vector3.Zero()} position={new Vector3(-40, 30, -40)}
               intensity={0.4} shadowMinZ={1} shadowMaxZ={2500}>
               <shadowGenerator mapSize={1024} useBlurExponentialShadowMap={true} blurKernel={32} darkness={0.8}
                 shadowCasters={["sphere1", "dialog"]} forceBackFacesOnly={true} depthScale={100} />
             </directionalLight>
-            <sphere ref={sphereRef} name="sphere1" diameter={2} segments={16} position={new Vector3(0, 2.5, 0)}>
-              <physicsImpostor type={PhysicsImpostor.SphereImpostor} _options={{ mass: 1, restitution: 0.9 }} />
-              <standardMaterial name='material1' specularPower={16}
-                diffuseColor={Color3.Black()}
-                emissiveColor={new Color3(0.5, 0.5, 0.5)}
-                reflectionFresnelParameters={FresnelParameters.Parse({
-                    isEnabled: true,
-                    leftColor: [1, 1, 1],
-                    rightColor: [0, 0, 0],
-                    bias: 0.1,
-                    power: 1
-                })}
-              />
-              <plane name="dialog" size={2} position={new Vector3(0, 1.5, 0)} sideOrientation={Mesh.BACKSIDE}>
-                <advancedDynamicTexture
-                    name="dialogTexture"
-                    height={1024} width={1024}
-                    createForParentMesh={true}
-                    hasAlpha={true}
-                    generateMipMaps={true}
-                    samplingMode={Texture.TRILINEAR_SAMPLINGMODE}
-                  >
-                    <rectangle name="rect-1" height={0.5} width={1} thickness={12} cornerRadius={12}>
-                        <rectangle>
-                            <babylon-button name="close-icon" background="green" onPointerDownObservable={onButtonClicked} >
-                            <textBlock text={'\uf00d click me'} fontFamily="FontAwesome" fontStyle="bold" fontSize={200} color="white" />
-                            </babylon-button>
-                        </rectangle>
-                    </rectangle>
-                  </advancedDynamicTexture>
-              </plane>
-            </sphere>
-            
+            {
+              state.scenes.map(s => (
+                <sphere
+                  // ref={sphereRef}
+                  key={s.id}
+                  name={s.title} diameter={1} segments={16} position={new Vector3(s.position, 0, 0)}>
+                  <standardMaterial name='material1' specularPower={16}
+                    diffuseColor={Color3.Black()}
+                    emissiveColor={new Color3(0.5, 0.5, 0.5)}
+                    reflectionFresnelParameters={FresnelParameters.Parse({
+                      isEnabled: true,
+                      leftColor: [1, 1, 1],
+                      rightColor: [0, 0, 0],
+                      bias: 0.1,
+                      power: 1
+                    })}
+                  />
+                </sphere>
+              ))
+            }
+
             <ground name="ground1" width={10} height={10} subdivisions={2} receiveShadows={true}>
               <physicsImpostor type={PhysicsImpostor.BoxImpostor} _options={{ mass: 0, restitution: 0.9 }} />
             </ground>
+            <adtFullscreenUi name="fullScreenUI">
+              {
+                state.scenes.map(s => (
+                  <textBlock top={s.position*20} text={s.title}/>
+                ))
+              }
+            </adtFullscreenUi>
             <vrExperienceHelper webVROptions={{ createDeviceOrientationCamera: false }} enableInteractions={true} />
           </Scene>
         </Engine>
-      </header>
-    </div>
-  );
+      </div>
+    );
+  }
+
 }
 export default App;
