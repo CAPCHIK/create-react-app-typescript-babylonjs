@@ -102,7 +102,7 @@ class App extends Component<{}, { scenes: Array<{ id: string, title: string, pos
             <adtFullscreenUi name="fullScreenUI">
               {
                 state.scenes.map(s => (
-                  <textBlock top={s.position * 20} text={s.title} />
+                  <textBlock key={s.id} top={s.position * 20} text={s.title} />
                 ))
               }
             </adtFullscreenUi>
