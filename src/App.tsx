@@ -16,7 +16,7 @@ const onButtonClicked = () => {
   }
 }
 
-class App extends Component<{}, { scenes: Array<{ id: string, title: string, position: number }> }> {
+class App extends Component<{}, { textBlockIds: Array<string>, scenes: Array<{ show: boolean, id: string, title: string, position: number }> }> {
   private sphereRef: any;
   private lastId = -5;
   constructor(props: any) {
@@ -31,19 +31,33 @@ class App extends Component<{}, { scenes: Array<{ id: string, title: string, pos
         {
           title: `title ${this.lastId}`,
           position: this.lastId,
-          id: (this.lastId++).toString()
+          id: (this.lastId++).toString(),
+          show: true
         },
         {
           title: `title ${this.lastId}`,
           position: this.lastId,
-          id: (this.lastId++).toString()
+          id: (this.lastId++).toString(),
+          show: true
         },
         {
           title: `title ${this.lastId}`,
           position: this.lastId,
-          id: (this.lastId++).toString()
+          id: (this.lastId++).toString(),
+          show: true
         }
       ],
+      textBlockIds: [
+        this.lastId.toString(),
+        (this.lastId + 1).toString(),
+        (this.lastId + 2).toString(),
+        (this.lastId + 3).toString(),
+        (this.lastId + 4).toString(),
+        (this.lastId + 5).toString(),
+        (this.lastId + 6).toString(),
+        (this.lastId + 7).toString(),
+        (this.lastId + 8).toString(),
+      ]
     }
     this.handleAdd = this.handleAdd.bind(this);
   }
@@ -56,9 +70,11 @@ class App extends Component<{}, { scenes: Array<{ id: string, title: string, pos
         {
           title: `title ${this.lastId}`,
           position: this.lastId,
-          id: (this.lastId++).toString()
+          id: (this.lastId++).toString(),
+          show: true
         }
-      ]
+      ],
+      textBlockIds: state.textBlockIds.filter(id => id != (this.lastId - 1).toString())
     }));
   }
 
@@ -101,8 +117,8 @@ class App extends Component<{}, { scenes: Array<{ id: string, title: string, pos
             </ground>
             <adtFullscreenUi name="fullScreenUI">
               {
-                state.scenes.map(s => (
-                  <textBlock key={s.id} top={s.position * 20} text={s.title} />
+                state.scenes.concat(state.textBlockIds.map(id => ({ id, position: +id, title: id, show: false}))).map(s => (
+                  <textBlock key={s.id} top={s.position * 20} text={s.title} isVisible={s.show} />
                 ))
               }
             </adtFullscreenUi>
